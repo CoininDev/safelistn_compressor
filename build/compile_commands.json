@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/gab/Documentos/prog/safelistn_compressor/build",
+  "command": "/usr/sbin/gcc -g -o CMakeFiles/safelistn.dir/main.c.o -c /home/gab/Documentos/prog/safelistn_compressor/main.c",
+  "file": "/home/gab/Documentos/prog/safelistn_compressor/main.c",
+  "output": "CMakeFiles/safelistn.dir/main.c.o"
+}
+]
