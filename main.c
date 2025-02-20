@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <portaudio.h>
+#include <pulse/simple.h>
+#include <pulse/error.h>
 
 #define SAMPLE_RATE 44100
 #define FRAMES_PER_BUFFER 256
@@ -105,29 +107,27 @@ int main(void) {
     }
 
 
-    /* Select device */
-    int numDev = Pa_GetDefaultInputDevice();
+    static const pa_sample_spec ss = {
+        .format = PA_SAMPLE_FLOAT32LE,
+        .rate = SAMPLE_RATE,
+        .channels = 1
+    };
+    int pa_error;
+    pa_simple *pa_stream = pa_simple_new(NULL, "compressor", PA_STREAM_RECORD, NULL, "record", &ss, NULL, NULL, &pa_error);
+    if (!pa_stream) {
+        fprintf(stderr, "pa_simple_new() failed: %s\n", pa_strerror(pa_error));
+        return 1;
+    }
 
     /* Abrir o stream de captura e reprodução */
-    // err = Pa_OpenDefaultStream(&stream,
-    //                            1,          /* 1 canal de entrada (mono) */
-    //                            1,          /* 1 canal de saída (mono) */
-    //                            paFloat32,  /* Formato de amostra de 32 bits float */
-    //                            SAMPLE_RATE,
-    //                            FRAMES_PER_BUFFER,
-    //                            patestCallback,
-    //                            &compressorData);  /* Dados do compressor */
-
-    err = Pa_OpenStream(
-        &stream,
-        &(PaStreamParameters){Pa_GetDefaultInputDevice(), paFloat32, 1, Pa_GetDeviceInfo(Pa_GetDefaultInputDevice())->defaultLowInputLatency, NULL},
-        &(PaStreamParameters){Pa_GetDefaultOutputDevice(), paFloat32, 1, Pa_GetDeviceInfo(Pa_GetDefaultOutputDevice())->defaultLowOutputLatency, NULL},
-        SAMPLE_RATE,
-        FRAMES_PER_BUFFER,
-        paClipOff,
-        compressorCallback,
-        &compressorData
-    );
+    err = Pa_OpenDefaultStream(&stream,
+                               1,          /* 1 canal de entrada (mono) */
+                               1,          /* 1 canal de saída (mono) */
+                               paFloat32,  /* Formato de amostra de 32 bits float */
+                               SAMPLE_RATE,
+                               FRAMES_PER_BUFFER,
+                               patestCallback,
+                               &compressorData);  /* Dados do compressor */
 
 
     if (err != paNoError) {
@@ -145,7 +145,15 @@ int main(void) {
     }
 
     printf("Rodando stream de áudio... Pressione Enter para parar.\n");
-    getchar(); /* Espera até que o usuário pressione Enter */
+    getchar();
+    // float buffer[FRAMES_PER_BUFFER];
+    // while(1) {
+    //     if (pa_simple_read(pa_stream, buffer, sizeof(buffer), &pa_error) < 0) {
+    //         fprintf(stderr, "pa_simple_read() failed: %s\n", pa_strerror(pa_error));
+    //         break;
+    //     }
+    //     Pa_WriteStream(stream, buffer, FRAMES_PER_BUFFER);
+    // }
 
     /* Parar o stream */
     err = Pa_StopStream(stream);
@@ -161,6 +169,9 @@ int main(void) {
 
     /* Finalizar PortAudio */
     Pa_Terminate();
+
+    /* Finalizar PulseAudio */
+    pa_simple_free(pa_stream);
 
     printf("Execução finalizada.\n");
     return 0;

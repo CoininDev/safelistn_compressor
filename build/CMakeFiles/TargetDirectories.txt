@@ -1,3 +1,3 @@
-/home/gab/Documentos/prog/safelistn_compressor/build/CMakeFiles/safelistn.dir
-/home/gab/Documentos/prog/safelistn_compressor/build/CMakeFiles/edit_cache.dir
-/home/gab/Documentos/prog/safelistn_compressor/build/CMakeFiles/rebuild_cache.dir
+/home/gaybe/Documentos/Prog/C e C++/safelistn_compressor/build/CMakeFiles/safelistn.dir
+/home/gaybe/Documentos/Prog/C e C++/safelistn_compressor/build/CMakeFiles/edit_cache.dir
+/home/gaybe/Documentos/Prog/C e C++/safelistn_compressor/build/CMakeFiles/rebuild_cache.dir
